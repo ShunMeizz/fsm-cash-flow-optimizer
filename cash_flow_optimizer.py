@@ -100,7 +100,7 @@ class CashFlowOptimizer:
 
             elif self.state == 'q2': # CFO Deficit
                 while True: 
-                    print("CFO Overflow. Fix it with cash Inflows. Choices are below")
+                    print("CFO Outflow. Fix it with cash Inflows. Choices are below")
                     choice = input("Enter 'A' for Asset Sale (CFI), 'LS' for Loan Share Issue (CFF): ").strip().upper()
                     if choice == 'A':
                         self.fill_surplus('Asset Sale')  
@@ -154,7 +154,7 @@ class CashFlowOptimizer:
 
             elif self.state == 'q4':  # CFI Deficit
                 while True: 
-                    print("CFI Overflow. Fix it with cash Inflows. Choices are below")
+                    print("CFI Outflow. Fix it with cash Inflows. Choices are below")
                     choice = input("Enter 'CR' for Cash Receipt Modification (CFO), 'LS' for Loan Share Issue (CFF): ").strip().upper()
                     if choice == 'CR':
                         self.resetting_surplus('Cash Receipt')
@@ -228,7 +228,7 @@ class CashFlowOptimizer:
 
             elif self.state == 'q6':  # CFF Deficit
                 while True: 
-                    print("CFF Overflow. Fix it with cash Inflows. Choices are below")
+                    print("CFF Outflow. Fix it with cash Inflows. Choices are below")
                     choice = input("Enter 'CR' for Cash Receipt Modification (CFO), 'AS' for Asset Sale (CFI): ").strip().upper()
                     if choice == 'CR':
                         self.resetting_surplus('Cash Receipt')

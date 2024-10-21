@@ -19,7 +19,7 @@ def view_statement(optimizer, company_name, statement_start_date, statement_end_
 
  2️⃣ Cash Flow From Investing Activities (CFI)
     Asset Sales: Php {optimizer.surplus['Asset Sale']:.2f}
-    Asset Payments: Php {optimizer.deficit['Asset Purchase']:.2f}
+    Asset Purchases: Php {optimizer.deficit['Asset Purchase']:.2f}
     ➡️ NET CASH USED BY INVESTING ACTIVITIES: Php {net_cfi:.2f}
 
  3️⃣ Cash Flow From Financing Activities (CFF)
