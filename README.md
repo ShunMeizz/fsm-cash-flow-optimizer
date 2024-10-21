@@ -7,14 +7,17 @@ The goal is to guide users through states to ensure an **overall Cash Inflow**, 
 ## Classification
 
 ### i. Under CFO (Operating Activities)
+
 1. **Cash Receipt (can lead to Inflow)**: eg. Cash Sales
 2. **Cash Payment (can lead to Outflow)**: eg. Pay for employees, Rent Payment
 
 ### ii. Under CFI (Investing Activities)
+
 3. **Asset Sale (can lead to Inflow)**: eg. Sale of Equipment, Sale of Investment
 4. **Asset Purchase (can lead to Outflow)**: eg. Purchase of Equipment, Construction of Building
 
 ### iii. Under CFF (Financing Activities)
+
 5. **Loan/Share Issue (can lead to Inflow)**: eg. Loan Acquisition, Issuance of Shares
 6. **Loan Repayment (can lead to Outflow)**: eg. Repayment of Loans/Borrowings
 
@@ -35,18 +38,17 @@ The goal is to guide users through states to ensure an **overall Cash Inflow**, 
 
 ### Transition Table
 
-| State | Inflow         | Outflow               |
-|-------|----------------|-----------------------|
-| q0    | ['q1']         | ['q2']                |
-| q1    | ['q3']         | ['q1', 'q2']          |
-| q2    | ['q3', 'q5']   | ['q2']                |
-| q3    | ['q5']         | ['q3', 'q4']          |
-| q4    | ['q1', 'q5']   | ['q4']                |
-| q5    | ['q7']         | ['q5', 'q6']          |
-| q6    | ['q1', 'q3']   | ['q6']                |
-| q7    | ['q7']         | []                     |
+| State | Inflow           | Outflow      |
+| ----- | ---------------- | ------------ |
+| q0    | ['q1']           | ['q2']       |
+| q1    | ['q3']           | ['q1', 'q2'] |
+| q2    | ['q3', 'q5']     | ['q2']       |
+| q3    | ['q5']           | ['q3', 'q4'] |
+| q4    | ['q1', 'q5']     | ['q4']       |
+| q5    | ['q1','q3','q7'] | ['q5', 'q6'] |
+| q6    | ['q1', 'q3']     | ['q6']       |
+| q7    | ['q7']           | []           |
 
 ---
 
 ### PS: Inflow/Outflow, Deficit/Surplus (same same)
-
