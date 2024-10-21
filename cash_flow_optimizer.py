@@ -51,7 +51,6 @@ class CashFlowOptimizer:
                     choice = input("Enter 'CR' for Cash Receipt (CFO), 'CP' for Cash Payment (CFO): ").strip().upper()
                     if choice == 'CR':
                         self.fill_surplus('Cash Receipt')
-                        self.state = self.transition_table[self.state]['Inflow'][0]  # Transition to q1
                         if self.deficit['Cash Payment'] == -1:
                             self.fill_deficit('Cash Payment')
                             if self.overall_cash_flow >=0:
@@ -61,7 +60,6 @@ class CashFlowOptimizer:
                         break
                     elif choice == 'CP':
                         self.fill_deficit('Cash Payment')
-                        self.state = self.transition_table[self.state]['Outflow'][0]  # Transition to q2
                         if self.surplus['Cash Receipt'] == -1:
                             self.fill_surplus('Cash Receipt')
                             if self.overall_cash_flow >=0:
@@ -206,7 +204,7 @@ class CashFlowOptimizer:
                     self.fill_deficit('Loan Repayment')
 
                 if self.overall_cash_flow >= 0:
-                    # This is to ensure that all the needed datas are fulfilled
+                    # This is to ensure that all the needed data is fulfilled
                     if self.surplus['Cash Receipt'] == -1:
                         self.state = self.transition_table[self.state]['Inflow'][0] # Transition back to q1
                     elif self.surplus['Asset Sale'] == -1:
@@ -268,7 +266,7 @@ class CashFlowOptimizer:
                             self.state = self.transition_table[self.state]['Outflow'][0]  # Transition still at q6
                         break 
                     else:
-                        print("Choices are CR and LS only")
+                        print("Choices are CR and AS only")
 
             elif self.state == 'q7':  # Final State
                 print("\nFinal State Reached! Your Cash Flow Statement is ready:")
