@@ -11,7 +11,7 @@ class CashFlowOptimizer:
             'q2': {'Inflow': ['q3', 'q5'], 'Outflow': ['q2']},
             'q3': {'Inflow': ['q5'], 'Outflow': ['q3', 'q4']},
             'q4': {'Inflow': ['q1', 'q5'], 'Outflow': ['q4']},
-            'q5': {'Inflow': ['q7'], 'Outflow': ['q5', 'q6']},
+            'q5': {'Inflow': ['q1','q3','q7'], 'Outflow': ['q5', 'q6']},
             'q6': {'Inflow': ['q1', 'q3'], 'Outflow': ['q6']},
             'q7': {'Inflow': ['q7'], 'Outflow': []},
         }
@@ -51,21 +51,33 @@ class CashFlowOptimizer:
                     choice = input("Enter 'CR' for Cash Receipt (CFO), 'CP' for Cash Payment (CFO): ").strip().upper()
                     if choice == 'CR':
                         self.fill_surplus('Cash Receipt')
-
-                        if self.overall_cash_flow >= 0:
-                            self.state = self.transition_table[self.state]['Inflow'][0]  # Transition to q1
-                            if self.deficit['Cash Payment'] == -1:
-                                self.fill_deficit('Cash Payment')
+                        self.state = self.transition_table[self.state]['Inflow'][0]  # Transition to q1
+                        if self.deficit['Cash Payment'] == -1:
+                            self.fill_deficit('Cash Payment')
+                            if self.overall_cash_flow >=0:
+                                self.state = self.transition_table[self.state]['Inflow'][0]  # Transition to q1
+                            else:
+                                self.state = self.transition_table[self.state]['Outflow'][0]  # Transition to q2
                         break
                     elif choice == 'CP':
                         self.fill_deficit('Cash Payment')
-                        if self.overall_cash_flow >= 0:
-                            self.state = self.transition_table[self.state]['Outflow'][0]  # Transition to q2
+                        self.state = self.transition_table[self.state]['Outflow'][0]  # Transition to q2
+                        if self.surplus['Cash Receipt'] == -1:
+                            self.fill_surplus('Cash Receipt')
+                            if self.overall_cash_flow >=0:
+                                self.state = self.transition_table[self.state]['Inflow'][0]  # Transition to q1
+                            else:
+                                self.state = self.transition_table[self.state]['Outflow'][0]  # Transition to q2
                         break
                     else:
                         print("Choices are 'CR' and 'CP' only")
 
-            elif self.state == 'q1':
+            elif self.state == 'q1': # CFO Surplus; Dominant Cash Payment can change its state to Outflow/Deficit
+                # Ensure Cash Receipt is not empty
+                if self.surplus['Cash Receipt'] == -1:
+                    self.fill_surplus('Cash Receipt')
+
+                # Start
                 if self.deficit['Cash Payment'] == -1:
                     self.fill_deficit('Cash Payment')
 
@@ -88,8 +100,9 @@ class CashFlowOptimizer:
                         else:
                             print("Choices are Y and N only")  
 
-            elif self.state == 'q2':
+            elif self.state == 'q2': # CFO Deficit
                 while True: 
+                    print("CFO Overflow. Fix it with cash Inflows. Choices are below")
                     choice = input("Enter 'A' for Asset Sale (CFI), 'LS' for Loan Share Issue (CFF): ").strip().upper()
                     if choice == 'A':
                         self.fill_surplus('Asset Sale')  
@@ -114,7 +127,12 @@ class CashFlowOptimizer:
                     else:
                         print("Choices are A and LS only")
 
-            elif self.state == 'q3':
+            elif self.state == 'q3': # CFI Surplus; Dominant Asset Purchase can change its state to Outflow/Deficit
+                # Ensure Asset Sale is not empty too
+                if self.surplus['Asset Sale'] == -1:
+                    self.fill_surplus('Asset Sale')
+
+                # Start
                 if self.deficit['Asset Purchase'] == -1:
                     self.fill_deficit('Asset Purchase')
 
@@ -138,6 +156,7 @@ class CashFlowOptimizer:
 
             elif self.state == 'q4':  # CFI Deficit
                 while True: 
+                    print("CFI Overflow. Fix it with cash Inflows. Choices are below")
                     choice = input("Enter 'CR' for Cash Receipt Modification (CFO), 'LS' for Loan Share Issue (CFF): ").strip().upper()
                     if choice == 'CR':
                         self.resetting_surplus('Cash Receipt')
@@ -160,6 +179,7 @@ class CashFlowOptimizer:
                                 if choice2 == 'Y':
                                     self.resetting_surplus('Loan Share Issue')
                                     self.fill_surplus('Loan Share Issue') 
+                                    break
                                 elif choice2 == 'N':
                                     self.state = self.transition_table[self.state]['Outflow'][0]  # Transition still at q4 
                                     break
@@ -176,14 +196,24 @@ class CashFlowOptimizer:
                     else:
                         print("Choices are CR and LS only")
 
-            elif self.state == 'q5':  # CFF Surplus
+            elif self.state == 'q5':  # CFF Surplus; Dominant Loan Repayment can change its state to Outflow/Deficit
+                # Ensure Loan Share Issues is not empty too
+                if self.surplus['Loan Share Issue'] == -1:
+                    self.fill_surplus('Loan Share Issue')
+                
+                # Start
                 if self.deficit['Loan Repayment'] == -1:
                     self.fill_deficit('Loan Repayment')
 
                 if self.overall_cash_flow >= 0:
-                    print("\nFinal State Reached! Your Cash Flow Statement is ready:")
-                    self.state = self.transition_table[self.state]['Inflow'][0]  # Transition to q7
-                    return self.overall_cash_flow
+                    # This is to ensure that all the needed datas are fulfilled
+                    if self.surplus['Cash Receipt'] == -1:
+                        self.state = self.transition_table[self.state]['Inflow'][0] # Transition back to q1
+                    elif self.surplus['Asset Sale'] == -1:
+                        self.state = self.transition_table[self.state]['Inflow'][1] # Transition back to q3
+                    else:
+                        print("\nFinal State Reached! Your Cash Flow Statement is ready:")
+                        self.state = self.transition_table[self.state]['Inflow'][2]  # Transition to q7
                 else:
                     print("An outflow. Do you want to modify Loan Repayment?")
                     choice = input("Enter 'Y' for Yes, 'N' for No: ").strip().upper()
@@ -200,6 +230,7 @@ class CashFlowOptimizer:
 
             elif self.state == 'q6':  # CFF Deficit
                 while True: 
+                    print("CFF Overflow. Fix it with cash Inflows. Choices are below")
                     choice = input("Enter 'CR' for Cash Receipt Modification (CFO), 'AS' for Asset Sale (CFI): ").strip().upper()
                     if choice == 'CR':
                         self.resetting_surplus('Cash Receipt')
@@ -221,7 +252,8 @@ class CashFlowOptimizer:
                             while True:
                                 if choice2 == 'Y':
                                     self.resetting_surplus('Asset Sale')
-                                    self.fill_surplus('Asset Sale') 
+                                    self.fill_surplus('Asset Sale')
+                                    break 
                                 elif choice2 == 'N':
                                     self.state = self.transition_table[self.state]['Outflow'][0]  # Transition still at q6
                                     break
